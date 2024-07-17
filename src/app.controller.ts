@@ -18,6 +18,6 @@ export class AppController {
 
   @Get('one')
   async findOne(@Body('id') id: number) {
-    return this.findOne(id);
+    return this.appService.findById(id);
   }
 }
