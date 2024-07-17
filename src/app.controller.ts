@@ -15,4 +15,9 @@ export class AppController {
   async findAll(): Promise<IProducts[]> {
     return this.appService.findAll();
   }
+
+  @Get('one')
+  async findOne(@Body('id') id: number) {
+    return this.findOne(id);
+  }
 }
