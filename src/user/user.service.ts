@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -13,7 +14,7 @@ export class UserService {
     return this.User;
   }
 
-  findOne(id: number) {
+  findById(id: number) {
     const resault = this.User.map((el) => {
       if (!(id === el.userId)) {
         return 'not found user with this id';
@@ -41,5 +42,14 @@ export class UserService {
       return `not found`;
     });
     return result;
+  }
+
+  findOne(email: string) {
+    const user: User[] = this.User.map((el: User) => {
+      if (el.email === email) {
+        return el;
+      }
+    });
+    return user;
   }
 }

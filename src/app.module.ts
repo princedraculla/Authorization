@@ -5,9 +5,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './gaurds/auth.gaurd';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UserModule, AuthModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule],
   controllers: [AppController],
   providers: [
     {
