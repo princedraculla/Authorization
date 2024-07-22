@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateSellerDTO } from './dto/create-seller.dto';
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,7 @@ export class UserService {
   }
 
   findById(id: number) {
-    const resault = this.User.map((el) => {
+    const resault = this.User.map((el: CreateUserDto) => {
       if (!(id === el.userId)) {
         return 'not found user with this id';
       }
@@ -51,5 +52,14 @@ export class UserService {
       }
     });
     return user;
+  }
+
+  createSeller(seller: CreateSellerDTO) {
+    try {
+      this.User.push(seller);
+      return 'success';
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 }

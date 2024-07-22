@@ -12,6 +12,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateSellerDTO } from './dto/create-seller.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('user')
@@ -48,5 +49,10 @@ export class UserController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Post('create-seller')
+  createSeller(@Request() req, @Body() sellerObject: CreateSellerDTO) {
+    this.userService.createSeller(sellerObject);
   }
 }
