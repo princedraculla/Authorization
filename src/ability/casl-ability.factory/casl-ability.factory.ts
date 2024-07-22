@@ -16,13 +16,21 @@ export type AppAbility = PureAbility<[Action, Subjects]>;
 @Injectable()
 export class CaslAbilityFactory {
   defineAbility(user: User) {
-    const { can, cannot, build } = new AbilityBuilder<
-      PureAbility<[Action, Subjects]>
-    >(PureAbility as AbilityClass<AppAbility>);
+    const { can, cannot, build } = new AbilityBuilder(
+      PureAbility as AbilityClass<AppAbility>,
+    );
 
-    if (user.role.isAdmin) {
-    } else if (user.role.isSeller) {
+    if (user.isAdmin) {
+      can(Action.Manage, 'all');
+    } else if (user.isSeller) {
+      can(Action.Create, Product);
+      can(Action.Read, Product);
+      can(Action.Read, User);
+      can(Action.Delete, Product, { userId: '${user.id}' });
+      can(Action.Update, Product, { userId: '${user.id}' });
+      cannot(Action.Delete, User).because('Delete Users not Allowed!!');
     } else {
+      can(Action.Read, Product);
     }
 
     return build({
