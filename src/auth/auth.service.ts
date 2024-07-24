@@ -14,18 +14,20 @@ export class AuthService {
     username: string,
     email: string,
   ): Promise<{ access_token: string }> {
-    const user = await this.userService.findOne(email);
-    let payload;
-    const exist = user.map((el: User) => {
+    const user = this.userService.findOne(email);
+    console.log(user);
+    const { ...payload } = user.map((el: User) => {
       if (!(el.username === username)) {
         throw new UnauthorizedException();
       }
-      payload = { sub: el.userId, username: el.username };
+      return {
+        sub: el.userId,
+        username: el.username,
+        permissions: el.permissions,
+      };
     });
-    console.log(exist);
-
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload[0]),
     };
   }
 }

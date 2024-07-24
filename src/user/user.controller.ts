@@ -14,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateSellerDTO } from './dto/create-seller.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+//import { User } from 'src/decorators/user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -23,7 +24,7 @@ export class UserController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
-
+  @UseGuards(AuthGuard)
   @Get('list')
   findAll() {
     return this.userService.findAll();
@@ -50,9 +51,16 @@ export class UserController {
   getProfile(@Request() req) {
     return req.user;
   }
-
+  @UseGuards(AuthGuard)
   @Post('create-seller')
-  createSeller(@Request() req, @Body() sellerObject: CreateSellerDTO) {
-    this.userService.createSeller(sellerObject);
+  createSeller(
+    //@User('permission') permission,
+    @Request() req,
+    @Body() sellerObject: CreateSellerDTO,
+  ) {
+    console.log(req);
+
+    const resualt = this.userService.createSeller(sellerObject);
+    return resualt;
   }
 }

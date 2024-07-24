@@ -57,7 +57,7 @@ export class UserService {
   createSeller(seller: CreateSellerDTO) {
     try {
       this.User.push(seller);
-      return 'success';
+      return this.User;
     } catch (error) {
       console.log(error.message);
     }
