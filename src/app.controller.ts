@@ -5,12 +5,10 @@ import {
   HttpException,
   HttpStatus,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ProductDTO } from './dto/product.dto';
 import { IProducts } from './interfaces/product.interface';
-import { RolesGuard } from './gaurds/auth.gaurd';
 import { Roles } from './decorators/role.decorator';
 import { Role as UserRoles } from './enums/role.enum';
 
@@ -19,7 +17,6 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
   @Post('add')
   @Roles(UserRoles.Admin)
-  @UseGuards(RolesGuard)
   async create(
     @Body() createProductdto: ProductDTO,
     @Body('roles') roles: UserRoles,

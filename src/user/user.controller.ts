@@ -13,7 +13,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateSellerDTO } from './dto/create-seller.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/gaurds/auth.guard';
 //import { User } from 'src/decorators/user.decorator';
 
 @Controller('user')
