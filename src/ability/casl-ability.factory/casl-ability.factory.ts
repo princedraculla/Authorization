@@ -1,41 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import {
-  AbilityBuilder,
-  AbilityClass,
-  InferSubjects,
-  PureAbility,
-  ExtractSubjectType,
-} from '@casl/ability';
+import { AbilityBuilder, AbilityClass, PureAbility } from '@casl/ability';
 import { Action } from 'src/enums/action.enum';
-import { Product } from 'src/product/entities/product.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Subject } from 'src/enums/subject.enum';
 
-export type Subjects = InferSubjects<typeof Product | typeof User> | 'all';
-export type AppAbility = PureAbility<[Action, Subjects]>;
+export type AppAbility = PureAbility<[Action, Subject]>;
+export interface Permissions {
+  action: Action;
+  subject: Subject;
+  condition?: Record<string, any>;
+}
 
 @Injectable()
 export class CaslAbilityFactory {
-  defineAbility(user: User) {
-    const { can, cannot, build } = new AbilityBuilder(
+  defineAbility(permissions: Permissions[]): AppAbility {
+    const { can, build } = new AbilityBuilder(
       PureAbility as AbilityClass<AppAbility>,
     );
 
-    if (user.isAdmin) {
-      can(Action.Manage, 'all');
-    } else if (user.isSeller) {
-      can(Action.Create, Product);
-      can(Action.Read, Product);
-      can(Action.Read, User);
-      can(Action.Delete, Product, { userId: '${user.id}' });
-      can(Action.Update, Product, { userId: '${user.id}' });
-      cannot(Action.Delete, User).because('Delete Users not Allowed!!');
-    } else {
-      can(Action.Read, Product);
-    }
-
-    return build({
-      detectSubjectType: (item) =>
-        item.constructor as ExtractSubjectType<Subjects>,
+    permissions.forEach(({ action, subject, condition }) => {
+      can(action, subject, condition);
     });
+
+    return build();
   }
 }

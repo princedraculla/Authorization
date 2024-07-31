@@ -10,7 +10,7 @@ import { AppService } from './app.service';
 import { ProductDTO } from './dto/product.dto';
 import { IProducts } from './interfaces/product.interface';
 import { Roles } from './decorators/role.decorator';
-import { Role as UserRoles } from './enums/role.enum';
+import { Role as UserRoles } from './enums/subject.enum';
 
 @Controller('products')
 export class AppController {
