@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import {
   CaslAbilityFactory,
-  Permissions,
+  Permission,
 } from 'src/ability/casl-ability.factory/casl-ability.factory';
 import { Action } from 'src/enums/action.enum';
 import { Subject } from 'src/enums/subject.enum';
@@ -27,7 +27,7 @@ export class PermissionGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest();
-    const userPermissions: Permissions[] = request.user?.permissions || [];
+    const userPermissions: Permission[] = request.user?.permissions || [];
     const ability = this.caslAbilityFactory.defineAbility(userPermissions);
 
     return requiredPermissions.every(({ action, subject }) => {

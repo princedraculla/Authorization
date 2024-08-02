@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
+import { CaslAbilityFactory } from 'src/ability/casl-ability.factory/casl-ability.factory';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, CaslAbilityFactory],
   exports: [AuthService],
 })
 export class AuthModule {}
