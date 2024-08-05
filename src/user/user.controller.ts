@@ -29,8 +29,8 @@ export class UserController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
-  @UseGuards(AuthGuard, PermissionGuard)
   @Get('list')
+  @UseGuards(AuthGuard, PermissionGuard)
   @RequirePermissions({ action: Action.Read, subject: Subject.User })
   findAll(@Permissions() permissions: Permission[]) {
     console.log(permissions);

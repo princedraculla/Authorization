@@ -16,11 +16,12 @@ export class CaslAbilityFactory {
     const { can, build } = new AbilityBuilder(
       PureAbility as AbilityClass<AppAbility>,
     );
-
-    permissions.forEach(({ action, subject, condition }) => {
-      can(action, subject, condition);
-    });
-
+    if (!Array.isArray(permissions)) {
+      const allPermissions = [].concat(permissions);
+      allPermissions.forEach(({ action, subject, condition }) => {
+        can(action, subject, condition);
+      });
+    }
     return build();
   }
 }

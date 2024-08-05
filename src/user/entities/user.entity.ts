@@ -4,9 +4,9 @@ export class User {
   email: string;
   isAdmin?: boolean;
   isSeller?: boolean;
-  permissions?: {
-    action: [string];
+  permissions?: Array<{
+    action: string;
     subject: string;
     condition?: object;
-  };
+  }>;
 }

@@ -28,8 +28,10 @@ export class PermissionGuard implements CanActivate {
     }
     const request = context.switchToHttp().getRequest();
     const userPermissions: Permission[] = request.user?.permissions || [];
+    console.log(userPermissions);
     const ability = this.caslAbilityFactory.defineAbility(userPermissions);
-
+    console.log(requiredPermissions);
+    console.log(ability);
     return requiredPermissions.every(({ action, subject }) => {
       ability.can(action, subject);
     });
