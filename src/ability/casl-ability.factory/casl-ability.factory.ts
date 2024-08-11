@@ -17,6 +17,7 @@ export class CaslAbilityFactory {
       PureAbility as AbilityClass<AppAbility>,
     );
     if (!Array.isArray(permissions)) {
+      console.log(permissions);
       const allPermissions = [].concat(permissions);
       allPermissions.forEach(({ action, subject, condition }) => {
         can(action, subject, condition);

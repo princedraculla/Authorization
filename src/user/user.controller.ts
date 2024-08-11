@@ -33,7 +33,7 @@ export class UserController {
   @UseGuards(AuthGuard, PermissionGuard)
   @RequirePermissions({ action: Action.Read, subject: Subject.User })
   findAll(@Permissions() permissions: Permission[]) {
-    console.log(permissions);
+    console.log(`permissions in controller: ${permissions}`);
     return this.userService.findAll();
   }
 

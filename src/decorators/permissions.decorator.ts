@@ -10,6 +10,7 @@ export const Permissions = createParamDecorator(
     const token = request.headers.authorization?.split(' ')[1];
     if (token) {
       const decodedToken = jwtService.decode(token);
+      console.log(`decoded token in permissions decorator: ${decodedToken}`);
       return decodedToken['permissions'];
     }
     return [];
