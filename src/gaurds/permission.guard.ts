@@ -1,36 +1,57 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
 import {
-  CaslAbilityFactory,
-  Permission,
-} from 'src/ability/casl-ability.factory/casl-ability.factory';
-import { Action } from 'src/enums/action.enum';
-import { Subject } from 'src/enums/subject.enum';
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { User } from 'src/user/entities/user.entity';
+import { AppAbility } from 'src/ability/casl-ability.factory/casl-ability.factory';
+import { CaslAbilityFactory } from 'src/ability/casl-ability.factory/casl-ability.factory';
 
 @Injectable()
-export class PermissionGuard implements CanActivate {
+export class PermissionsGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
+    private jwtService: JwtService,
     private caslAbilityFactory: CaslAbilityFactory,
   ) {}
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const requiredPermissions = this.reflector.get<
-      {
-        action: Action;
-        subject: Subject;
-      }[]
-    >('permissions', context.getHandler());
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
+      'permissions',
+      [context.getHandler(), context.getClass()],
+    );
     if (!requiredPermissions) {
       return true;
     }
     const request = context.switchToHttp().getRequest();
-    const userPermissions: Permission[] = request.user.permissions || [];
-    const ability = this.caslAbilityFactory.defineAbility(userPermissions);
-    return requiredPermissions.every(({ action, subject }) => {
-      ability.can(action, subject);
-    });
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    console.log(type);
+
+    if (!token) {
+      throw new UnauthorizedException('token not found');
+    }
+    const decodedToken = this.jwtService.decode(token);
+    const user: User = decodedToken;
+    console.log(user);
+    if (!user || !user.permissions) {
+      throw new UnauthorizedException('token expierd or dont have permission');
+    }
+    const ability: AppAbility = this.caslAbilityFactory.defineAbility(user);
+    console.log(user.permissions['action']);
+    console.log(
+      ability.can(user.permissions['action'], user.permissions['subject']),
+    );
+    if (
+      !user.permissions.some((permission) => {
+        console.log(permission);
+        console.log(ability);
+      })
+    ) {
+      throw new UnauthorizedException('Insufficient permissions');
+    }
+
+    return true;
   }
 }
