@@ -15,6 +15,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateSellerDTO } from './dto/create-seller.dto';
 import { AuthGuard } from 'src/gaurds/auth.guard';
 import { PermissionsGuard } from 'src/gaurds/permission.guard';
+import { CheckPolicies } from 'src/decorators/policies.decorator';
+import { AppAbility } from 'src/ability/casl-ability.factory/casl-ability.factory';
+import { Action } from 'src/enums/action.enum';
+import { Subject } from 'src/enums/subject.enum';
 
 @Controller('user')
 export class UserController {
@@ -26,6 +30,9 @@ export class UserController {
   }
   @Get('list')
   @UseGuards(AuthGuard, PermissionsGuard)
+  @CheckPolicies((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.User),
+  )
   findAll() {
     return this.userService.findAll();
   }

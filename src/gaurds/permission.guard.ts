@@ -9,6 +9,8 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { AppAbility } from 'src/ability/casl-ability.factory/casl-ability.factory';
 import { CaslAbilityFactory } from 'src/ability/casl-ability.factory/casl-ability.factory';
+import { PolicyHandler } from 'src/interfaces/policyhandle.interface';
+import { CHECK_POLICIES } from 'src/decorators/policies.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -18,40 +20,43 @@ export class PermissionsGuard implements CanActivate {
     private caslAbilityFactory: CaslAbilityFactory,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
-      'permissions',
-      [context.getHandler(), context.getClass()],
-    );
+    const requiredPermissions =
+      this.reflector.get<PolicyHandler[]>(
+        CHECK_POLICIES,
+        context.getHandler(),
+      ) || [];
+
     if (!requiredPermissions) {
       return true;
     }
-    const request = context.switchToHttp().getRequest();
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    console.log(type);
+    try {
+      const request = context.switchToHttp().getRequest();
+      const [type, token] = request.headers.authorization?.split(' ') ?? [];
+      console.log(type);
 
-    if (!token) {
-      throw new UnauthorizedException('token not found');
-    }
-    const decodedToken = this.jwtService.decode(token);
-    const user: User = decodedToken;
-    console.log(user);
-    if (!user || !user.permissions) {
-      throw new UnauthorizedException('token expierd or dont have permission');
-    }
-    const ability: AppAbility = this.caslAbilityFactory.defineAbility(user);
-    console.log(user.permissions['action']);
-    console.log(
-      ability.can(user.permissions['action'], user.permissions['subject']),
-    );
-    if (
-      !user.permissions.some((permission) => {
-        console.log(permission);
-        console.log(ability);
-      })
-    ) {
-      throw new UnauthorizedException('Insufficient permissions');
-    }
+      if (!token) {
+        throw new UnauthorizedException('token not found');
+      }
+      const decodedToken = this.jwtService.decode(token);
+      const user: User = decodedToken;
 
-    return true;
+      const ability: AppAbility = this.caslAbilityFactory.defineAbility(user);
+
+      return requiredPermissions.every((handler) => {
+        this.excutePolicyHandler(handler, ability);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  private excutePolicyHandler(handler: PolicyHandler, ability: AppAbility) {
+    if (typeof handler === 'function') {
+      console.log('ability in execution:');
+      console.log(ability);
+
+      return handler(ability);
+    }
+    return handler.handle(ability);
   }
 }
