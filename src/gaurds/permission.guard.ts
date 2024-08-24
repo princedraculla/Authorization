@@ -26,36 +26,46 @@ export class PermissionsGuard implements CanActivate {
         context.getHandler(),
       ) || [];
 
-    if (!requiredPermissions) {
+    if (requiredPermissions.length === 0) {
       return true;
     }
     try {
       const request = context.switchToHttp().getRequest();
       const [type, token] = request.headers.authorization?.split(' ') ?? [];
-      console.log(type);
 
-      if (!token) {
-        throw new UnauthorizedException('token not found');
+      if (type !== 'Bearer' || !token) {
+        throw new UnauthorizedException('invalid token');
       }
-      const decodedToken = this.jwtService.decode(token);
-      const user: User = decodedToken;
+      const payload = this.jwtService.verify(token);
+      console.log('decode token payload: ', payload);
+
+      const user: User = {
+        userId: payload.sub,
+        username: payload.username,
+        email: 'does not matter right now',
+        permissions: payload.permissions,
+      };
+      console.log('Extracted User: ', user);
 
       const ability: AppAbility = this.caslAbilityFactory.defineAbility(user);
 
-      return requiredPermissions.every((handler) => {
-        this.excutePolicyHandler(handler, ability);
+      const resualt = requiredPermissions.every((handler) => {
+        return this.excutePolicyHandler(handler, ability);
       });
+      console.log('check policy result: ', resualt);
+      return resualt;
     } catch (error) {
-      console.log(error);
+      console.log('Authorization error: ', error);
+      throw new UnauthorizedException('first LogIn and SignIn then try...');
     }
   }
 
   private excutePolicyHandler(handler: PolicyHandler, ability: AppAbility) {
+    console.log('execution Policy Handler');
     if (typeof handler === 'function') {
-      console.log('ability in execution:');
-      console.log(ability);
-
-      return handler(ability);
+      const resulat = handler(ability);
+      console.log('policy handler resualt: ', resulat);
+      return resulat;
     }
     return handler.handle(ability);
   }

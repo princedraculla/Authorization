@@ -30,9 +30,10 @@ export class UserController {
   }
   @Get('list')
   @UseGuards(AuthGuard, PermissionsGuard)
-  @CheckPolicies((ability: AppAbility) =>
-    ability.can(Action.Read, Subject.User),
-  )
+  @CheckPolicies((ability: AppAbility) => {
+    console.log('checking policy for read user');
+    return ability.can(Action.Create, Subject.Product);
+  })
   findAll() {
     return this.userService.findAll();
   }
