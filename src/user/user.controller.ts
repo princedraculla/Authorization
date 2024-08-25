@@ -32,7 +32,7 @@ export class UserController {
   @UseGuards(AuthGuard, PermissionsGuard)
   @CheckPolicies((ability: AppAbility) => {
     console.log('checking policy for read user');
-    return ability.can(Action.Create, Subject.Product);
+    return ability.can(Action.Read, Subject.User);
   })
   findAll() {
     return this.userService.findAll();
@@ -61,11 +61,7 @@ export class UserController {
   }
   @UseGuards(AuthGuard)
   @Post('create-seller')
-  createSeller(
-    //@User('permission') permission,
-    @Request() req,
-    @Body() sellerObject: CreateSellerDTO,
-  ) {
+  createSeller(@Request() req, @Body() sellerObject: CreateSellerDTO) {
     console.log(req);
 
     const resualt = this.userService.createSeller(sellerObject);

@@ -2,8 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-// import { Action } from 'src/enums/action.enum';
-// import { Subject } from 'src/enums/subject.enum';
 
 @Injectable()
 export class AuthService {
@@ -28,8 +26,6 @@ export class AuthService {
         permissions: [el.permissions],
       };
     });
-    console.log(payload);
-    console.log(payload.length);
     return {
       access_token: this.jwtService.sign(payload[0]),
     };

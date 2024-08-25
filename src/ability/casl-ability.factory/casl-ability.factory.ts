@@ -18,14 +18,12 @@ export class CaslAbilityFactory {
       PureAbility as AbilityClass<AppAbility>,
     );
     try {
-      console.log('Defining Ability for user:', user);
       if (Array.isArray(user.permissions)) {
         user.permissions.forEach((permission) => {
           const { action, subject, condition } = permission;
           const actions = Array.isArray(action) ? action : [action];
           actions.forEach((act) => {
             if (this.isValidEnumValue(Action, act) && subject) {
-              console.log(`Adding permissions: ${act}, ${subject}`);
               if (condition) {
                 can(act, subject, condition);
               } else {
@@ -41,14 +39,10 @@ export class CaslAbilityFactory {
       console.log(error);
     }
 
-    //return build() as AppAbility;
-
-    const ability = build({
+    return build({
       detectSubjectType: (object: any) =>
         object.constructor as ExtractSubjectType<Subject>,
     });
-    console.log('built ability: ', ability);
-    return ability;
   }
   private isValidEnumValue(enumType: Record<string, any>, value: any) {
     return Object.values(enumType).includes(value);

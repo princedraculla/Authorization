@@ -37,22 +37,20 @@ export class PermissionsGuard implements CanActivate {
         throw new UnauthorizedException('invalid token');
       }
       const payload = this.jwtService.verify(token);
-      console.log('decode token payload: ', payload);
+      const userInfo = payload['0'] || payload;
 
       const user: User = {
-        userId: payload.sub,
-        username: payload.username,
+        userId: userInfo.sub,
+        username: userInfo.username,
         email: 'does not matter right now',
-        permissions: payload.permissions,
+        permissions: userInfo.permissions,
       };
-      console.log('Extracted User: ', user);
 
       const ability: AppAbility = this.caslAbilityFactory.defineAbility(user);
 
       const resualt = requiredPermissions.every((handler) => {
         return this.excutePolicyHandler(handler, ability);
       });
-      console.log('check policy result: ', resualt);
       return resualt;
     } catch (error) {
       console.log('Authorization error: ', error);
@@ -61,10 +59,9 @@ export class PermissionsGuard implements CanActivate {
   }
 
   private excutePolicyHandler(handler: PolicyHandler, ability: AppAbility) {
-    console.log('execution Policy Handler');
     if (typeof handler === 'function') {
       const resulat = handler(ability);
-      console.log('policy handler resualt: ', resulat);
+
       return resulat;
     }
     return handler.handle(ability);
