@@ -5,9 +5,9 @@ import {
   ExtractSubjectType,
   PureAbility,
 } from '@casl/ability';
-import { Action } from 'src/enums/action.enum';
-import { Subject } from 'src/enums/subject.enum';
-import { User } from 'src/user/entities/user.entity';
+import { Action } from '../../enums/action.enum';
+import { Subject } from '../../enums/subject.enum';
+import { User } from '../../user/entities/user.entity';
 
 export type AppAbility = PureAbility<[Action, Subject]>;
 

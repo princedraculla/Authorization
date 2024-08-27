@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/user/entities/user.entity';
-import { AppAbility } from 'src/ability/casl-ability.factory/casl-ability.factory';
-import { CaslAbilityFactory } from 'src/ability/casl-ability.factory/casl-ability.factory';
-import { PolicyHandler } from 'src/interfaces/policyhandle.interface';
-import { CHECK_POLICIES } from 'src/decorators/policies.decorator';
+import { User } from '../user/entities/user.entity';
+import { AppAbility } from '../ability/casl-ability.factory/casl-ability.factory';
+import { CaslAbilityFactory } from '../ability/casl-ability.factory/casl-ability.factory';
+import { PolicyHandler } from '../interfaces/policyhandle.interface';
+import { CHECK_POLICIES } from '../decorators/policies.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -54,7 +54,7 @@ export class PermissionsGuard implements CanActivate {
       return resualt;
     } catch (error) {
       console.log('Authorization error: ', error);
-      throw new UnauthorizedException('first LogIn and SignIn then try...');
+      throw new UnauthorizedException();
     }
   }
 
