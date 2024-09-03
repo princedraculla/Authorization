@@ -13,7 +13,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateSellerDTO } from './dto/create-seller.dto';
-import { AuthGuard } from 'src/gaurds/auth.guard';
+import { AuthGuard } from '../gaurds/auth.guard';
 import { PermissionsGuard } from 'src/gaurds/permission.guard';
 import { CheckPolicies } from 'src/decorators/policies.decorator';
 import { AppAbility } from 'src/ability/casl-ability.factory/casl-ability.factory';

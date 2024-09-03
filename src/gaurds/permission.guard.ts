@@ -2,7 +2,8 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
@@ -34,7 +35,16 @@ export class PermissionsGuard implements CanActivate {
       const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
       if (type !== 'Bearer' || !token) {
-        throw new UnauthorizedException('invalid token');
+        throw new HttpException(
+          {
+            status: HttpStatus.FORBIDDEN,
+            error: 'invalid token',
+          },
+          HttpStatus.FORBIDDEN,
+          {
+            cause: 'token checking error',
+          },
+        );
       }
       const payload = this.jwtService.verify(token);
       const userInfo = payload['0'] || payload;
@@ -53,11 +63,18 @@ export class PermissionsGuard implements CanActivate {
       });
       return resualt;
     } catch (error) {
-      console.log('Authorization error: ', error);
-      throw new UnauthorizedException();
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'not valid or exist token',
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
     }
   }
-
   private excutePolicyHandler(handler: PolicyHandler, ability: AppAbility) {
     if (typeof handler === 'function') {
       const resulat = handler(ability);
