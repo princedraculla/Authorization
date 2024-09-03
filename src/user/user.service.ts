@@ -46,9 +46,11 @@ export class UserService {
   }
 
   findOne(email: string) {
-    const user: User[] = this.User.map((el: User) => {
+    const user = this.User.map((el: User) => {
       if (el.email === email) {
         return el;
+      } else {
+        return 'user with this not found';
       }
     });
     return user;

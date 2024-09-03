@@ -32,7 +32,6 @@ export class UserController {
   @Get('list')
   @UseGuards(AuthGuard, PermissionsGuard)
   @CheckPolicies((ability: AppAbility) => {
-    console.log('checking policy for read user');
     return ability.can(Action.Read, Subject.User);
   })
   findAll() {

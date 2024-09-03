@@ -10,10 +10,12 @@ export class AppService {
   public findAll(): IProducts[] {
     return this.products;
   }
-  public findById(id: number): IProducts[] {
-    const result: IProducts[] = this.products.map((el) => {
-      if (id === el.id) {
-        return el;
+  public findById(id: number): Array<IProducts | string> {
+    const result: Array<IProducts | string> = this.products.map((el) => {
+      if (!(id === el.id)) {
+        return 'this product not exist';
+      } else {
+        return el as IProducts;
       }
     });
     return result;
