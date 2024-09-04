@@ -20,13 +20,14 @@ import { CheckPolicies } from 'src/decorators/policies.decorator';
 import { AppAbility } from 'src/ability/casl-ability.factory/casl-ability.factory';
 import { Action } from 'src/enums/action.enum';
 import { Subject } from 'src/enums/subject.enum';
+import { UserValidationPipe } from './pipes/validation.pipe';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('add')
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body(new UserValidationPipe()) createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
   @Get('list')
@@ -64,7 +65,10 @@ export class UserController {
   }
   @UseGuards(AuthGuard)
   @Post('create-seller')
-  createSeller(@Request() req, @Body() sellerObject: CreateSellerDTO) {
+  createSeller(
+    @Request() req,
+    @Body(new UserValidationPipe()) sellerObject: CreateSellerDTO,
+  ) {
     console.log(req);
 
     const resualt = this.userService.createSeller(sellerObject);

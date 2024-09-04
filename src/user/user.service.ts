@@ -28,7 +28,7 @@ export class UserService {
   update(id: number, updateUserDto: UpdateUserDto) {
     const result = this.User.forEach((item, index, store) => {
       if (id === item.userId) {
-        store[index] = updateUserDto;
+        store[index] = updateUserDto!;
       }
     });
     return result;
